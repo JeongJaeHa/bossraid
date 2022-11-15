@@ -1,4 +1,4 @@
-import { BadRequestException, CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, IsNull, Repository } from 'typeorm';
 import { CreateBossraidDto } from './dto/create-bossraid.dto';
@@ -23,8 +23,8 @@ export class BossraidService {
     private readonly connection: Connection,
     @InjectRedis() private readonly redis: Redis,
   ) {}
-  async raidEnter(createBossraidDto: CreateBossraidDto): Promise<{}> {
-    const { userId, level } = createBossraidDto;
+  async raidEnter(createBossraidDto: CreateBossraidDto, getRedisLevel: number): Promise<{}> {
+    const { userId } = createBossraidDto;
     const findUser = await this.usersRepository
     .query(
       `
@@ -45,7 +45,7 @@ export class BossraidService {
     try{
       const raid = new RaidHistories
       raid.userId = userId;
-      raid.level = level;
+      raid.level = getRedisLevel;
       raid.enter_time = new Date()
       await queryRunner.manager.save(raid);
       await queryRunner.commitTransaction();
@@ -112,25 +112,35 @@ export class BossraidService {
     const beforeTotalScore = Number(record[0].total)
     const newTotalScore = (beforeTotalScore + Number(redisScore))
     
-      if(Date.now()/1000 < Math.floor(enterTime/1000 + LimitTime)) {
-            await this.raidHistoriesRepository
-            .createQueryBuilder()
-            .update('userhistories')
-            .set({score: redisScore, end_time: time})
-            .where({id: recordId})
-            .execute()
-            await this.redis.zadd(`rank`, newTotalScore, `${userId}`)
-        }
-      else {
-        let score = 0
-        await this.raidHistoriesRepository
-        .createQueryBuilder()
-        .update('userhistories')
-        .set({score: score, end_time: time})
-        .where({id: recordId})
-        .execute()
+    if(Date.now()/1000 < Math.floor(enterTime/1000 + LimitTime)) {
+          await this.raidHistoriesRepository
+          .createQueryBuilder()
+          .update('userhistories')
+          .set({score: redisScore, end_time: time})
+          .where({id: recordId})
+          .execute()
+          await this.redis.zadd(`rank`, newTotalScore, `${userId}`)
       }
-      const result = String(Math.floor(clearTime))   
-      return Object.assign({'clearTime': result + 's'})
-}
+    else {
+      let score = 0
+      await this.raidHistoriesRepository
+      .createQueryBuilder()
+      .update('userhistories')
+      .set({score: score, end_time: time})
+      .where({id: recordId})
+      .execute()
+    }
+    const result = String(Math.floor(clearTime))   
+    return Object.assign({'clearTime': result + 's'})
+  }
+
+  async updateEndTime(userId: number, recordId: number) {
+    await this.raidHistoriesRepository
+    .createQueryBuilder()
+    .update('userhistories')
+    .set({end_time: new Date()})
+    .where('userId=:userId', {userId: userId})
+    .andWhere('id=:recordId', {recordId: recordId})
+    .execute()
+  }
 }

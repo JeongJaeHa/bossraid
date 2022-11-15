@@ -49,7 +49,8 @@ export class UsersService {
               enter_time as enterTime,
               end_time as endTime
               FROM userhistories
-              WHERE userId = ${userId}`)
+              WHERE userId = ${userId}
+              ORDER BY enterTime DESC`)
     return Object.assign({"totalScore": score, "bossRaidHistory": history})
     } catch(err) {
       throw new InternalServerErrorException('server error')

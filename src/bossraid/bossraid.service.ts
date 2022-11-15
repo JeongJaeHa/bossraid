@@ -6,10 +6,12 @@ import { RaidHistories } from './entities/bossraid.entity';
 import Redis from 'ioredis';
 import { InjectRedis } from '@liaoliaots/nestjs-redis'
 import { Users, UsersRepository } from 'src/users/entities/user.entity';
+import { config } from 'dotenv'
 
-const moment = require('moment-timezone')
-moment.tz.setDefault("Asia/Seoul")
-const LimitTime = Number(process.env.LIMIT_TIME)
+config();
+const moment = require('moment-timezone');
+moment.tz.setDefault("Asia/Seoul");
+const LimitTime = Number(process.env.LIMIT_TIME);
 
 @Injectable()
 export class BossraidService {
@@ -37,9 +39,9 @@ export class BossraidService {
       throw new BadRequestException('another user play now');
     }
 
-    const queryRunner = this.connection.createQueryRunner()
-    await queryRunner.connect()
-    await queryRunner.startTransaction()
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     try{
       const raid = new RaidHistories
       raid.userId = userId;
@@ -86,7 +88,7 @@ export class BossraidService {
       endUpdate.end_time = new Date();
       endUpdate.score = 0;
       await this.raidHistoriesRepository.save(endUpdate);
-      return Object.assign({"canEnter": "true"})
+      return Object.assign({"canEnter": "true"});
     } else if(find){
       return Object.assign({"canEnter": "false", "enterUserId": userId})
     }
@@ -102,7 +104,7 @@ export class BossraidService {
     WHERE id =${recordId} AND userID = ${userId} AND end_time IS NULL
     `)
     if(record.length == 0) {
-      throw new BadRequestException('this raid already end')
+      throw new BadRequestException('check enter level and recordId')
     }
     const enterTime = record[0].enter_time;
     const time = new Date()

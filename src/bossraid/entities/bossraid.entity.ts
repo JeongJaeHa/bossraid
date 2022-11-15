@@ -19,7 +19,7 @@ export class RaidHistories {
     @CreateDateColumn()
     enter_time: Date;
 
-    @UpdateDateColumn({nullable: true, default: null})
+    @UpdateDateColumn({nullable: true, type: "timestamp", default: () => null, onUpdate: "CURRENT_TIMESTAMP(6)"})
     end_time: Date;
 }
 

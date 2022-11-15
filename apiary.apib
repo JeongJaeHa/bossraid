@@ -1,0 +1,123 @@
+FORMAT: 1A
+HOST: localhost:3000
+
+# GameDuo
+
+wanted_5th
+
+## Users [/users]
+
+### Create user [POST]
+
++ Request (application/json)
+
+{
+    "nickname":"testUser2"
+}
+
++ Response 201 (application/json)
+{
+    "userId": 2
+}
+
+<!--## Get user information [/users/:id]-->
+
+### Get User Information [GET /users/:id]
+
++ Request (application/json)
+
+
++ Response 200 (application/json)
+
+    + Body
+
+    {
+        "totalScore": {
+            "score": "597"
+        },
+        "bossRaidHistory": [
+            {
+                "raidRecordId": 19,
+                "score": 85,
+                "enterTime": "2022-11-15T07:14:48.085Z",
+                "endTime": "2022-11-15T07:15:19.204Z"
+            },
+            {
+                "raidRecordId": 18,
+                "score": 0,
+                "enterTime": "2022-11-15T06:19:37.321Z",
+                "endTime": "2022-11-15T06:37:52.024Z"
+            }
+        ]
+    }
+
+## bossraid [/bossraid]
+
+### canEnter Check[GET]
+
++ Request (application/json)
+
+
++ Response 200 (application/json)
+
+{
+    "canEnter": "true"
+}
+
+### Enter Raid [POST /bossraid/enter]
++ Request (application/json)
+
+    + Body
+    
+    {
+        "userId": 1,
+        "level": 2
+    }
+    
++ Response 200 (application/json)
+
+    + Body
+    
+    {
+        "raidRecordId": 19,
+        "isEnter": ""
+    }
+    
+
+### End Raid [PATCH /bossraid/end]
++ Request (application/json)
+
+    + Body
+{
+    "userId":1,
+    "recordId": 19
+}
+    
++ Response 200 (application/json)
+
+    + Body
+{
+    "clearTime": "31s"
+}
+
+### Get Ranking Information [GET /bossraid/topLankerList]
++ Request (application/json)
+
+    + Body
+{
+    "userId":1
+}
+    
++ Response 200 (application/json)
+
+    + Body
+{
+    "topRankerInfoList": [
+        {
+            "ranking": 0,
+            "userId": "1",
+            "totalScore": "597"
+        }
+    ],
+    "myRankingInfo": 0
+}

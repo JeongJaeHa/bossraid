@@ -9,6 +9,7 @@ import { Users, UsersRepository } from 'src/users/entities/user.entity';
 
 const moment = require('moment-timezone')
 moment.tz.setDefault("Asia/Seoul")
+const LimitTime = Number(process.env.LIMIT_TIME)
 
 @Injectable()
 export class BossraidService {
@@ -80,7 +81,7 @@ export class BossraidService {
     const id = find[0].id
     const userId = find[0].userId;
     const enterTime = find[0].enter_time;
-    if(Date.now()/1000 > Math.floor(enterTime/1000 + (1 * 60))){
+    if(Date.now()/1000 > Math.floor(enterTime/1000 + LimitTime)){
       const endUpdate = await this.raidHistoriesRepository.findOneBy({id: id});
       endUpdate.end_time = new Date();
       endUpdate.score = 0;
@@ -109,7 +110,7 @@ export class BossraidService {
     const beforeTotalScore = Number(record[0].total)
     const newTotalScore = (beforeTotalScore + Number(redisScore))
     
-      if(Date.now()/1000 < Math.floor(enterTime/1000 + (1 * 60))) {
+      if(Date.now()/1000 < Math.floor(enterTime/1000 + LimitTime)) {
             await this.raidHistoriesRepository
             .createQueryBuilder()
             .update('userhistories')

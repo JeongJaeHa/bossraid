@@ -60,8 +60,7 @@ export class BossraidService {
       `
     )
     const recordId = enterUser[0].recordId
-    const enterUserId = enterUser[0].userId
-    return Object.assign({"recordId": recordId, "userId": enterUserId})
+    return Object.assign({"raidRecordId": recordId, "isEnter": ""})
   }
 
   async checkEnter() {
@@ -92,7 +91,7 @@ export class BossraidService {
     }
   }
 
-  async raidEnd(userId: string, recordId: string, redisScore: any) {
+  async raidEnd(userId: number, recordId: number, redisScore: any) {
     const record = await this.raidHistoriesRepository
     .query(`
     SELECT

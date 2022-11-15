@@ -1,0 +1,10 @@
+{
+    "type": "mysql",
+    "host": "localhost",
+    "port": 3307,
+    "username": "docker",
+    "password": "roskfl123",
+    "database": "test",
+    "entities": ["dist/**/*.entity{.ts,.js}"],
+    "synchronize": true
+}

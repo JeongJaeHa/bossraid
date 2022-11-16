@@ -78,7 +78,7 @@ export class BossraidController {
       const myRank = await this.redis.zrank('rank', myId)
       return Object.assign({'topRankerInfoList': array, 'myRankingInfo': myRank})
     } catch(err){
-      console.log(err)
+      throw new BadRequestException('잠시후 다시 시도해주세요.')
     }
   }
 }

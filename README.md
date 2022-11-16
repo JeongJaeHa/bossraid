@@ -1,73 +1,45 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# 개요
+요구사항에 맞는 게임 API 구현 프로젝트입니다.
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# 기술스택
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=TypeScript&logoColor=white"/></a> <img src="https://img.shields.io/badge/NestJs-E0234E?style=flat-square&logo=NestJs&logoColor=white"/></a>  <img src="https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=Redis&logoColor=white"/></a> <img src="https://img.shields.io/badge/Mysql-4479A1?style=flat-square&logo=MySql&logoColor=white"/></a>  <img src="https://img.shields.io/badge/TypeOrm-262627?style=flat-square&logo=typeorm&logoColor=white"/></a>
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+  # ERD
+  <img width="490" alt="스크린샷 2022-11-16 오후 1 50 36" src="https://user-images.githubusercontent.com/99805929/202086674-539af2de-1776-413c-8d48-e008fcaf57a4.png">
 
-## Description
+  # 구현사항
+  ## 유저생성
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+  닉네임을 입력 시 사용자를 생성하고 userId를 반환합니다.
 
-## Installation
+<img width="1041" alt="스크린샷 2022-11-16 오후 1 28 21" src="https://user-images.githubusercontent.com/99805929/202083744-16a99746-eb98-4e3a-b839-8d19404de8ec.png"><br/>
 
-```bash
-$ npm install
-```
+  ## 유저조회
+  사용자 id(userId)의 총 점수와 레이드 기록(입장시간 기준 최신순)을 전송합니다
 
-## Running the app
+<img width="1034" alt="스크린샷 2022-11-16 오후 1 30 08" src="https://user-images.githubusercontent.com/99805929/202083974-66c0a1a3-c196-48c3-b7e3-e32cf145bdbe.png"><br/>
 
-```bash
-# development
-$ npm run start
+  ## 레이드 상태확인
+DB에서 end_time이 Null인 값을 조회하여 없는 경우 true(입장가능)을 있는 경우 해당 row의 userId와 false(입장불가능)을 return 합니다.
 
-# watch mode
-$ npm run start:dev
+<img width="1039" alt="스크린샷 2022-11-16 오후 1 32 23" src="https://user-images.githubusercontent.com/99805929/202084261-76220a52-c530-4d7b-a994-7d5118c6ffd9.png"><br/>
 
-# production mode
-$ npm run start:prod
-```
+  ## 레이드 입장
+사용자 id(userId)와 level을 입력하면 recordId를 반환합니다.<br/>
+Redis 메모리에 level 값이 없는 경우 Http Request를 전송하여 값을 받아오고, Response에 level 값이 없는 경우에는 에러를 발생시킵니다.
 
-## Test
+<img width="1040" alt="스크린샷 2022-11-16 오후 1 35 04" src="https://user-images.githubusercontent.com/99805929/202084608-2962b88c-6c3e-4a12-9b08-8a54c01cb4c8.png"><br/>
 
-```bash
-# unit tests
-$ npm run test
+  ## 레이드 종료
+  userId와 recordId를 입력하여 전송 시 레이드가 종료됩니다.<br/>
+  Score는 Redis 메모리에 저장되어 있는 Score를 활용하며 최종 점수를 합산하여 Redis 메모리에 저장합니다.
 
-# e2e tests
-$ npm run test:e2e
+<img width="1041" alt="스크린샷 2022-11-16 오후 1 37 27" src="https://user-images.githubusercontent.com/99805929/202084888-e8e7090a-80b6-4358-a793-654f05ae9444.png"><br/>
 
-# test coverage
-$ npm run test:cov
-```
 
-## Support
+  ## 레이드 랭킹조회
+  Redis 메모리에 저장된 유저의 랭킹정보를 가져옵니다.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+  <img width="1038" alt="스크린샷 2022-11-16 오후 1 40 57" src="https://user-images.githubusercontent.com/99805929/202085405-2dde8a2e-4896-4618-9836-fef5c4d84b2e.png">
+  <br/>
+ 
